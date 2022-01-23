@@ -1,0 +1,2 @@
+'*': prettier --ignore-unknown --write
+'*.{js,jsx,ts,tsx}': yarn eslint --ignore-path .prettierignore

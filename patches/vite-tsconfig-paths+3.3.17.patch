@@ -1,0 +1,73 @@
+diff --git a/node_modules/vite-tsconfig-paths/dist/index.js b/node_modules/vite-tsconfig-paths/dist/index.js
+index 5475d86..dfa34b6 100644
+--- a/node_modules/vite-tsconfig-paths/dist/index.js
++++ b/node_modules/vite-tsconfig-paths/dist/index.js
+@@ -96,15 +96,15 @@ var src_default = (opts = {}) => {
+       return null;
+     }
+     const { baseUrl, paths } = config;
+-    if (!baseUrl) {
+-      debug(`[!] missing baseUrl: "${config.configPath}"`);
++    if (!baseUrl && !paths) {
++      debug(`[!] missing baseUrl and paths: "${config.configPath}"`);
+       return null;
+     }
+     debug("config loaded:", config);
+-    let resolveId = (viteResolve, id, importer) => viteResolve(join(baseUrl, id), importer);
++    let resolveId;
+     if (paths) {
+-      const matchPath = _tsconfigpaths.createMatchPathAsync.call(void 0, baseUrl, paths, mainFields);
+-      const resolveWithBaseUrl = resolveId;
++      const matchPath = _tsconfigpaths.createMatchPathAsync.call(void 0, baseUrl || root, paths, mainFields);
++      const resolveWithBaseUrl = (viteResolve, id, importer) => viteResolve(join(baseUrl || root, id), importer);
+       const resolveWithPaths = (viteResolve, id, importer) => new Promise((done) => {
+         matchPath(id, void 0, void 0, extensions, (error, path2) => {
+           if (path2) {
+@@ -117,6 +117,8 @@ var src_default = (opts = {}) => {
+         });
+       });
+       resolveId = (viteResolve, id, importer) => resolveWithPaths(viteResolve, id, importer).then((resolved2) => resolved2 || resolveWithBaseUrl(viteResolve, id, importer));
++    } else if (baseUrl) {
++      resolveId = (viteResolve, id, importer) => viteResolve(join(baseUrl, id), importer);
+     }
+     const isIncluded = getIncluder(config);
+     let importerExtRE = /./;
+diff --git a/node_modules/vite-tsconfig-paths/dist/index.mjs b/node_modules/vite-tsconfig-paths/dist/index.mjs
+index f1ecb1e..068f90b 100644
+--- a/node_modules/vite-tsconfig-paths/dist/index.mjs
++++ b/node_modules/vite-tsconfig-paths/dist/index.mjs
+@@ -96,19 +96,19 @@ var src_default = (opts = {}) => {
+       return null;
+     }
+     const { baseUrl, paths } = config;
+-    if (!baseUrl) {
+-      debug(`[!] missing baseUrl: "${config.configPath}"`);
++    if (!baseUrl && !paths) {
++      debug(`[!] missing baseUrl and paths: "${config.configPath}"`);
+       return null;
+     }
+     debug("config loaded:", config);
+-    let resolveId = (viteResolve, id, importer) => viteResolve(join(baseUrl, id), importer);
++    let resolveId;
+     if (paths) {
+-      const matchPath = createMatchPathAsync(baseUrl, paths, mainFields);
+-      const resolveWithBaseUrl = resolveId;
++      const matchPath = _tsconfigpaths.createMatchPathAsync.call(void 0, baseUrl || root, paths, mainFields);
++      const resolveWithBaseUrl = (viteResolve, id, importer) => viteResolve(join(baseUrl || root, id), importer);
+       const resolveWithPaths = (viteResolve, id, importer) => new Promise((done) => {
+         matchPath(id, void 0, void 0, extensions, (error, path2) => {
+           if (path2) {
+-            path2 = normalizePath3(path2);
++            path2 = _vite.normalizePath.call(void 0, path2);
+             done(viteResolve(path2, importer));
+           } else {
+             error && debug(error.message);
+@@ -117,6 +117,8 @@ var src_default = (opts = {}) => {
+         });
+       });
+       resolveId = (viteResolve, id, importer) => resolveWithPaths(viteResolve, id, importer).then((resolved2) => resolved2 || resolveWithBaseUrl(viteResolve, id, importer));
++    } else if (baseUrl) {
++      resolveId = (viteResolve, id, importer) => viteResolve(join(baseUrl, id), importer);
+     }
+     const isIncluded = getIncluder(config);
+     let importerExtRE = /./;
