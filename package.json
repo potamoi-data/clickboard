@@ -2,17 +2,22 @@
     "name": "clickboard",
     "version": "0.0.0",
     "license": "MIT",
-    "main": "build/index.js",
+    "main": "build/clickboard.umd.js",
+    "module": "build/clickboard.es.js",
+    "types": "build/index.d.ts",
     "scripts": {
-        "build": "tsc && vite build",
+        "build": "vite build && yarn build-types",
+        "build-demo": "vite --config vite.demo.config.ts build",
+        "build-types": "tsc --project tsconfig.declaration.json",
+        "check-all": "yarn check-format && yarn lint && yarn tsc && yarn test",
         "check-format": "prettier --check .",
-        "dev": "vite",
+        "dev": "vite --config vite.demo.config.ts",
         "format": "prettier --write .",
         "lint": "yarn eslint --ignore-path .prettierignore '**/*.{js,jsx,ts,tsx}'",
         "postinstall": "patch-package",
         "pre-commit": "lint-staged",
         "prepare": "husky install",
-        "preview": "vite preview",
+        "preview": "vite --config vite.demo.config.ts preview",
         "test": "jest"
     },
     "dependencies": {
@@ -69,5 +74,8 @@
         "@types/react": {
             "optional": true
         }
-    }
+    },
+    "files": [
+        "/build"
+    ]
 }

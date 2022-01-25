@@ -1,6 +1,7 @@
-.idea/
-.vscode/
-build/
+/.idea
+/.vscode
+/build
+/demo-build
 
 # Created by https://www.toptal.com/developers/gitignore/api/yarn,node,linux,macos,windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=yarn,node,linux,macos,windows

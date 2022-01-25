@@ -3,22 +3,16 @@ import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-import manifest from './package.json';
-
 // https://vitejs.dev/config/
 const config = defineConfig({
     build: {
-        lib: { entry: resolve(__dirname, 'src/index.ts'), name: manifest.name },
-        outDir: 'build',
-        rollupOptions: {
-            external: [
-                ...Object.keys(manifest.dependencies),
-                ...Object.keys(manifest.peerDependencies),
-            ],
-        },
+        outDir: 'demo-build',
+        rollupOptions: { input: resolve(__dirname, 'demo/index.html') },
         target: 'es2021',
     },
     plugins: [react(), tsconfigPaths()],
+    preview: { port: 8000, strictPort: true },
+    server: { port: 8000, strictPort: true },
 });
 
 export default config;
