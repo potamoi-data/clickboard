@@ -5,20 +5,22 @@ import EChart from 'echarts-for-react';
 import { memo, useMemo } from 'react';
 import useResizeObserver from 'use-resize-observer';
 
-import { PanelConfig } from '~/types/panel';
+import { ChartConfig } from '~/types/chart';
+import { PanelData } from '~/types/panel-editor';
 import { getEchartsOption } from '~/utils/chart';
 
 export interface ChartProps {
-    panel: PanelConfig;
+    config: ChartConfig;
+    data: PanelData;
 }
 
 const _Chart = (props: ChartProps) => {
-    const { panel } = props;
+    const { config, data } = props;
     const { height, width, ref } = useResizeObserver();
 
     const option = useMemo(
-        () => getEchartsOption({ chartConfig: panel.chartConfig, panelData: panel.data }),
-        [panel],
+        () => getEchartsOption({ chartConfig: config, panelData: data }),
+        [config, data],
     );
 
     const chartCss = css`

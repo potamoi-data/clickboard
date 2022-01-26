@@ -2,19 +2,24 @@
 
 import { css } from '@emotion/react';
 import { Button, useTheme } from '@mui/material';
-import { memo, useCallback, useRef } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 import { useImmer } from 'use-immer';
 import { v4 as uuid } from 'uuid';
 
 import {
     ChartType,
-    ClickhouseColumnType,
     Dashboard,
     getNewPanelPosition,
+    getPartialPanelEditorConfigFromPartial,
     PanelConfig,
+    PanelEditor,
     PanelLayout,
     PanelLayoutEntry,
+    PartialPanelEditorConfig,
 } from '~/.';
+import { unsafeGet } from '~/utils/array';
+
+import { defaultPartialPanelEditorConfig, defaultPanelData } from '~demo/data/app';
 
 const columns = 12;
 const minPanelWidth = 3;
@@ -37,32 +42,15 @@ interface CreatePanelOptions {
 
 const _createPanel = (options: CreatePanelOptions): PanelConfig => {
     const { layout, title } = options;
-    const xAxisColumn = 'x';
-    const yAxisColumn = 'y';
-    const groupColumn = 'z';
     return {
-        chartConfig: {
+        chart: {
             type: ChartType.line,
-            xAxisColumn,
-            yAxisColumn,
-            groupColumn,
+            xAxisColumn: unsafeGet(defaultPanelData.columnNames, 0),
+            yAxisColumn: unsafeGet(defaultPanelData.columnNames, 1),
+            groupColumn: unsafeGet(defaultPanelData.columnNames, 2),
             legends: true,
         },
-        data: {
-            columnNames: [xAxisColumn, yAxisColumn, groupColumn],
-            columnTypes: [
-                ClickhouseColumnType.float,
-                ClickhouseColumnType.float,
-                ClickhouseColumnType.string,
-            ],
-            rows: [
-                [0, 1, 'group0'],
-                [3, 5, 'group0'],
-                [2, 1, 'group1'],
-                [6, 7, 'group1'],
-            ],
-            query: 'query',
-        },
+        data: defaultPanelData,
         id: uuid(),
         layout,
         title,
@@ -73,6 +61,8 @@ const _App = () => {
     const theme = useTheme();
 
     const panelIndexRef = useRef(0);
+
+    const [panelEditorConfig, setPanelEditorConfig] = useState<PartialPanelEditorConfig>();
 
     const createPanel = useCallback((layout: PanelLayout) => {
         const panel = _createPanel({ title: `Panel ${panelIndexRef.current}`, layout });
@@ -85,18 +75,40 @@ const _App = () => {
     );
 
     const addPanel = useCallback(() => {
+        setPanelEditorConfig(defaultPartialPanelEditorConfig);
+    }, [setPanelEditorConfig]);
+
+    const back = useCallback(() => {
+        setPanelEditorConfig(undefined);
+    }, [setPanelEditorConfig]);
+
+    const savePanel = useCallback(() => {
+        if (!panelEditorConfig) {
+            return;
+        }
+        const filledConfig = getPartialPanelEditorConfigFromPartial(panelEditorConfig);
+        if (!filledConfig) {
+            return;
+        }
         updatePanels(panels => {
-            const [x, y] = getNewPanelPosition({
-                panels,
-                columns,
-                initialWidth: initialPanelWidth,
-            });
-            return [
-                ...panels,
-                createPanel({ x, y, height: initialPanelHeight, width: initialPanelWidth }),
-            ];
+            const index = panels.findIndex(panel => panel.id === filledConfig.id);
+            if (index === -1) {
+                const [x, y] = getNewPanelPosition({
+                    columns,
+                    initialWidth: initialPanelWidth,
+                    panels,
+                });
+                panels.push({
+                    ...filledConfig,
+                    layout: { x, y, height: initialPanelHeight, width: initialPanelWidth },
+                });
+            } else {
+                const panel = unsafeGet(panels, index);
+                panels[index] = { ...filledConfig, layout: panel.layout };
+            }
         });
-    }, [createPanel, updatePanels]);
+        setPanelEditorConfig(undefined);
+    }, [panelEditorConfig, setPanelEditorConfig, updatePanels]);
 
     const onLayoutChange = useCallback(
         (entries: PanelLayoutEntry[]) => {
@@ -125,41 +137,82 @@ const _App = () => {
         [updatePanels],
     );
 
+    const onPanelEdit = useCallback(
+        (id: string) => {
+            const panel = panels.find(panel => panel.id === id);
+            if (panel) {
+                setPanelEditorConfig(panel);
+            }
+        },
+        [panels, setPanelEditorConfig],
+    );
+
+    const onPanelEditorConfigChange = useCallback(
+        (config: PartialPanelEditorConfig) => {
+            setPanelEditorConfig(config);
+        },
+        [setPanelEditorConfig],
+    );
+
     const appCss = css`
         display: flex;
         flex-direction: column;
         height: 100%;
     `;
 
-    const dashboardCss = css`
+    const mainCss = css`
         flex: 1 0;
         height: 0;
     `;
 
     const controlsCss = css`
         display: flex;
+        gap: 16px;
         border-top: 1px solid ${theme.palette.divider};
         padding: 16px;
     `;
 
     return (
         <div css={appCss}>
-            <div css={dashboardCss}>
-                <Dashboard
-                    columns={columns}
-                    gap={16}
-                    horizontalPadding={16}
-                    maxPanelHeight={maxPanelHeight}
-                    minPanelWidth={minPanelWidth}
-                    onLayoutChange={onLayoutChange}
-                    onPanelDelete={onPanelDelete}
-                    panels={panels}
-                    rowHeight={rowHeight}
-                    verticalPadding={16}
-                ></Dashboard>
+            <div css={mainCss}>
+                {panelEditorConfig ? (
+                    <PanelEditor
+                        config={panelEditorConfig}
+                        horizontalPadding={16}
+                        onConfigChange={onPanelEditorConfigChange}
+                        previewHeight={rowHeight * initialPanelHeight}
+                        verticalPadding={16}
+                    ></PanelEditor>
+                ) : (
+                    <Dashboard
+                        columns={columns}
+                        gap={16}
+                        horizontalPadding={16}
+                        maxPanelHeight={maxPanelHeight}
+                        minPanelWidth={minPanelWidth}
+                        onLayoutChange={onLayoutChange}
+                        onPanelDelete={onPanelDelete}
+                        onPanelEdit={onPanelEdit}
+                        panels={panels}
+                        rowHeight={rowHeight}
+                        verticalPadding={16}
+                    ></Dashboard>
+                )}
             </div>
             <div css={controlsCss}>
-                <Button onClick={addPanel}>Add panel</Button>
+                {panelEditorConfig ? (
+                    <>
+                        <Button onClick={back}>Back</Button>
+                        <Button
+                            disabled={!getPartialPanelEditorConfigFromPartial(panelEditorConfig)}
+                            onClick={savePanel}
+                        >
+                            Save
+                        </Button>
+                    </>
+                ) : (
+                    <Button onClick={addPanel}>Add panel</Button>
+                )}
             </div>
         </div>
     );

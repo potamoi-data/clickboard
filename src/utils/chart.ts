@@ -1,9 +1,12 @@
 import { EChartsOption, LineSeriesOption } from 'echarts';
 
-import { ChartConfig } from '~/types/chart';
+import { ChartConfig, PartialChartConfig } from '~/types/chart';
 import { ClickhouseCell } from '~/types/clickhouse';
-import { PanelData } from '~/types/panel';
+import { PanelData } from '~/types/panel-editor';
 import { unsafeFindIndex, unsafeGet } from '~/utils/array';
+
+export const isChartConfigComplete = (config: PartialChartConfig): config is ChartConfig =>
+    !!(config.type && config.xAxisColumn && config.yAxisColumn);
 
 export interface GetEchartsOption {
     chartConfig: ChartConfig;

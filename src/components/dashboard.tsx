@@ -21,7 +21,8 @@ export interface DashboardProps {
     minPanelHeight?: number;
     minPanelWidth?: number;
     onLayoutChange: (opitons: PanelLayoutEntry[]) => void;
-    onPanelDelete: (id: string) => void;
+    onPanelDelete?: (id: string) => void;
+    onPanelEdit?: (id: string) => void;
     panels: readonly PanelConfig[];
     rowHeight: number;
     verticalPadding: number;
@@ -38,6 +39,7 @@ const _Dashboard = (props: DashboardProps) => {
         minPanelWidth,
         onLayoutChange,
         onPanelDelete,
+        onPanelEdit,
         panels,
         rowHeight,
         verticalPadding,
@@ -91,11 +93,14 @@ const _Dashboard = (props: DashboardProps) => {
 
     const panelElements = panels.map(panel => {
         const onDelete = () => {
-            onPanelDelete(panel.id);
+            onPanelDelete?.(panel.id);
+        };
+        const onEdit = () => {
+            onPanelEdit?.(panel.id);
         };
         return (
             <div key={panel.id}>
-                <Panel config={panel} onDelete={onDelete}></Panel>
+                <Panel config={panel} onDelete={onDelete} onEdit={onEdit}></Panel>
             </div>
         );
     });

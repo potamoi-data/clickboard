@@ -4,10 +4,25 @@ import '@fontsource/roboto/500.css';
 
 export type { DashboardProps } from '~/components/dashboard';
 export { Dashboard } from '~/components/dashboard';
-export type { ChartConfig, LineChartConfig } from '~/types/chart';
+export type { PanelEditorProps } from '~/components/panel-editor';
+export { PanelEditor } from '~/components/panel-editor';
+export { emptyPartialPanelEditorConfig } from '~/data/panel-editor';
+export type {
+    ChartConfig,
+    LineChartConfig,
+    PartialChartConfig,
+    PartialLineChartConfig,
+} from '~/types/chart';
 export { ChartType } from '~/types/chart';
 export type { ClickhouseCell } from '~/types/clickhouse';
 export { ClickhouseColumnType } from '~/types/clickhouse';
 export type { PanelConfig, PanelLayout, PanelLayoutEntry } from '~/types/panel';
+export type {
+    PanelData,
+    PanelEditorConfig,
+    PartialPanelData,
+    PartialPanelEditorConfig,
+} from '~/types/panel-editor';
 export type { GetNewPanelPositionOptions } from '~/utils/dashboard';
 export { getNewPanelPosition } from '~/utils/dashboard';
+export { getPartialPanelEditorConfigFromPartial } from '~/utils/panel-editor';

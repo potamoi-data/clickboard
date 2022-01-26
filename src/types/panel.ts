@@ -1,5 +1,4 @@
-import { ChartConfig } from '~/types/chart';
-import { ClickhouseCell, ClickhouseColumnType } from '~/types/clickhouse';
+import { PanelEditorConfig } from '~/types/panel-editor';
 
 export interface PanelLayout {
     height: number;
@@ -13,27 +12,6 @@ export interface PanelLayoutEntry {
     layout: PanelLayout;
 }
 
-export interface PanelData {
-    columnNames: string[];
-    columnTypes: ClickhouseColumnType[];
-    query: string;
-    rows: ClickhouseCell[][];
-}
-
-export interface PanelEditorConfig {
-    chartConfig: ChartConfig;
-    data: PanelData;
-    description?: string;
-    id: string;
+export interface PanelConfig extends PanelEditorConfig {
     layout: PanelLayout;
-    title: string;
-}
-
-export interface PanelConfig {
-    chartConfig: ChartConfig;
-    data: PanelData;
-    description?: string;
-    id: string;
-    layout: PanelLayout;
-    title: string;
 }

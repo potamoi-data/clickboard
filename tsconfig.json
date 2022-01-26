@@ -15,7 +15,7 @@
         "noImplicitReturns": true,
         "noPropertyAccessFromIndexSignature": true,
         "noUncheckedIndexedAccess": true,
-        "paths": { "~/*": ["./src/*"] },
+        "paths": { "~/*": ["./src/*"], "~demo/*": ["./demo/*"] },
         "skipLibCheck": true,
         "strict": true,
         "target": "ESNext",

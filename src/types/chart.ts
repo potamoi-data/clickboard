@@ -11,3 +11,7 @@ export interface LineChartConfig {
 }
 
 export type ChartConfig = LineChartConfig;
+
+export type PartialLineChartConfig = Partial<LineChartConfig>;
+
+export type PartialChartConfig = PartialLineChartConfig;
