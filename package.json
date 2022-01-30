@@ -1,6 +1,24 @@
 {
     "name": "clickboard",
-    "version": "0.0.0",
+    "version": "0.0.1",
+    "author": {
+        "name": "Naman Nehra"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/potamoi-data/clickboard.git"
+    },
+    "bugs": {
+        "url": "https://github.com/potamoi-data/clickboard/issues"
+    },
+    "homepage": "https://clickboard.potamoi.dev",
+    "keywords": [
+        "react",
+        "charts",
+        "echarts",
+        "dashboard",
+        "clickhouse"
+    ],
     "license": "MIT",
     "main": "build/clickboard.umd.js",
     "module": "build/clickboard.es.js",
@@ -18,6 +36,7 @@
         "pre-commit": "lint-staged",
         "prepare": "husky install",
         "preview": "vite --config vite.demo.config.ts preview",
+        "release": "np",
         "test": "jest"
     },
     "dependencies": {
@@ -55,6 +74,7 @@
         "jest": "^27.4.7",
         "lint-staged": "^12.1.2",
         "lodash": "^4.17.21",
+        "np": "^7.6.0",
         "patch-package": "^6.4.7",
         "postinstall-postinstall": "^2.1.0",
         "prettier": "^2.5.1",
@@ -74,6 +94,10 @@
         "@types/react": {
             "optional": true
         }
+    },
+    "np": {
+        "contents": "build",
+        "publish": false
     },
     "files": [
         "/build"
