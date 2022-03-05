@@ -7,7 +7,7 @@ import useResizeObserver from 'use-resize-observer';
 
 import { ChartConfig } from '~/types/chart';
 import { PanelData } from '~/types/panel-editor';
-import { getEchartsOption } from '~/utils/chart';
+import { getEchartsConfig } from '~/utils/chart';
 
 export interface ChartProps {
     config: ChartConfig;
@@ -19,7 +19,7 @@ const _Chart = (props: ChartProps) => {
     const { height, width, ref } = useResizeObserver();
 
     const option = useMemo(
-        () => getEchartsOption({ chartConfig: config, panelData: data }),
+        () => getEchartsConfig({ chartConfig: config, panelData: data }),
         [config, data],
     );
 

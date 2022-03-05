@@ -1,21 +1,32 @@
 import { produce } from 'immer';
 
-import { ChartType } from '~/types/chart';
+import { ChartType, PartialChartConfig } from '~/types/chart';
 import {
     PanelData,
     PanelEditorConfig,
     PartialPanelData,
     PartialPanelEditorConfig,
 } from '~/types/panel-editor';
-import { isChartConfigComplete } from '~/utils/chart';
+import { fillBarChartConfig, fillLineChartConfig, isChartConfigComplete } from '~/utils/chart';
+
+const fillChartConfig = (config: PartialChartConfig): PartialChartConfig => {
+    if (!config.type) {
+        return config;
+    }
+    switch (config.type) {
+        case ChartType.bar:
+            return fillBarChartConfig(config);
+        case ChartType.line:
+            return fillLineChartConfig(config);
+    }
+};
 
 export const fillPartialPanelEditorConfig = (
     config: PartialPanelEditorConfig,
 ): PartialPanelEditorConfig =>
     produce(config, draft => {
         // @todo
-        draft.chart.type = ChartType.line;
-        draft.chart.legends = !!draft.chart.legends;
+        draft.chart = fillChartConfig(draft.chart);
     });
 
 export const isPanelDataComplete = (data: PartialPanelData): data is PanelData => !!data.query;
@@ -28,7 +39,7 @@ export const isPanelEditorConfigComplete = (
     config.id !== undefined &&
     config.title !== undefined;
 
-export const getPartialPanelEditorConfigFromPartial = (
+export const getPanelEditorConfigFromPartial = (
     config: PartialPanelEditorConfig,
 ): PanelEditorConfig | undefined => {
     const filledConfig = fillPartialPanelEditorConfig(config);

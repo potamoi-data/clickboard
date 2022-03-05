@@ -3,25 +3,29 @@
 import { css } from '@emotion/react';
 import { Shuffle } from '@mui/icons-material';
 import {
-    Autocomplete,
-    AutocompleteRenderInputParams,
-    Checkbox,
     Divider,
-    FormControlLabel,
+    FormControl,
     IconButton,
     InputAdornment,
+    InputLabel,
+    MenuItem,
     Paper,
+    Select,
+    SelectChangeEvent,
     TextField,
-    TextFieldProps,
     Tooltip,
     Typography,
 } from '@mui/material';
 import { Draft, produce } from 'immer';
 import { noop } from 'lodash-es';
-import { ChangeEvent, memo, useCallback, useMemo } from 'react';
+import { ChangeEvent, memo, useCallback, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 
+import { ChartEditor } from '~/components/chart-editor';
+import { textfieldCss } from '~/components/form-control';
 import { PanelEditorPreview } from '~/components/panel-editor-preview';
+import { chartTypeNames } from '~/data/chart';
+import { ChartType, PartialChartConfig } from '~/types/chart';
 import { PartialPanelEditorConfig } from '~/types/panel-editor';
 import { fillPartialPanelEditorConfig } from '~/utils/panel-editor';
 
@@ -34,11 +38,11 @@ export interface PanelEditorProps {
     verticalPadding: number;
 }
 
-const textFieldWidth = 256;
-
 const _PanelEditor = (props: PanelEditorProps) => {
     const { config, horizontalPadding, onConfigChange, onSubmit, previewHeight, verticalPadding } =
         props;
+
+    const [chartTypeId] = useState(uuid);
 
     type ProduceConfigCallback = (config: Draft<PartialPanelEditorConfig>) => void;
     const produceConfig = useCallback(
@@ -113,86 +117,25 @@ const _PanelEditor = (props: PanelEditorProps) => {
         [produceConfig],
     );
 
-    const textFieldCss = css`
-        width: ${textFieldWidth}px;
-    `;
-
-    const xAxisOptions = useMemo(() => config.data.columnNames, [config]);
-    const xAxisInput = useCallback(
-        (params: AutocompleteRenderInputParams) => (
-            <TextField
-                css={textFieldCss}
-                {...(params as TextFieldProps)}
-                label="X Axis"
-            ></TextField>
-        ),
-        [textFieldCss],
-    );
-    const onXAxisChange = useCallback(
-        (_event: unknown, value: string | null) => {
+    const onChartTypeChange = useCallback(
+        (event: SelectChangeEvent<ChartType | ''>) => {
+            const value = event.target.value as ChartType | '';
+            if (value === '') {
+                return;
+            }
             produceConfig(config => {
-                if (value) {
-                    config.chart.xAxisColumn = value;
-                } else {
-                    delete config.chart.xAxisColumn;
-                }
+                config.chart = {
+                    type: value,
+                };
             });
         },
         [produceConfig],
     );
 
-    const yAxisOptions = useMemo(() => config.data.columnNames, [config]);
-    const yAxisInput = useCallback(
-        (params: AutocompleteRenderInputParams) => (
-            <TextField
-                css={textFieldCss}
-                {...(params as TextFieldProps)}
-                label="Y Axis"
-            ></TextField>
-        ),
-        [textFieldCss],
-    );
-    const onYAxisChange = useCallback(
-        (_event: unknown, value: string | null) => {
+    const onChartConfigChange = useCallback(
+        (chartConfig: PartialChartConfig) => {
             produceConfig(config => {
-                if (value) {
-                    config.chart.yAxisColumn = value;
-                } else {
-                    delete config.chart.yAxisColumn;
-                }
-            });
-        },
-        [produceConfig],
-    );
-
-    const chartGroupOptions = useMemo(() => config.data.columnNames, [config]);
-    const chartGroupInput = useCallback(
-        (params: AutocompleteRenderInputParams) => (
-            <TextField
-                css={textFieldCss}
-                {...(params as TextFieldProps)}
-                label="Group by"
-            ></TextField>
-        ),
-        [textFieldCss],
-    );
-    const onChartGroupChange = useCallback(
-        (_event: unknown, value: string | null) => {
-            produceConfig(config => {
-                if (value) {
-                    config.chart.groupColumn = value;
-                } else {
-                    delete config.chart.groupColumn;
-                }
-            });
-        },
-        [produceConfig],
-    );
-
-    const onChartLegendsChange = useCallback(
-        (_event: unknown, value: boolean) => {
-            produceConfig(config => {
-                config.chart.legends = value;
+                config.chart = chartConfig;
             });
         },
         [produceConfig],
@@ -241,7 +184,7 @@ const _PanelEditor = (props: PanelEditorProps) => {
             <Paper css={controlsContainerCss} elevation={2}>
                 <form css={controlsCss} onSubmit={onSubmit ?? noop}>
                     <TextField
-                        css={textFieldCss}
+                        css={textfieldCss}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
@@ -258,19 +201,19 @@ const _PanelEditor = (props: PanelEditorProps) => {
                         value={config.id ?? ''}
                     ></TextField>
                     <TextField
-                        css={textFieldCss}
+                        css={textfieldCss}
                         label="Title"
                         onChange={onTitleChange}
                         value={config.title ?? ''}
                     ></TextField>
                     <TextField
-                        css={textFieldCss}
+                        css={textfieldCss}
                         label="Query"
                         onChange={onQueryChange}
                         value={config.data.query ?? ''}
                     ></TextField>
                     <TextField
-                        css={textFieldCss}
+                        css={textfieldCss}
                         label="Description"
                         multiline
                         onChange={onDescriptionChange}
@@ -283,33 +226,26 @@ const _PanelEditor = (props: PanelEditorProps) => {
                             Chart
                         </Typography>
                     </div>
-                    <Autocomplete
-                        onChange={onXAxisChange}
-                        options={xAxisOptions}
-                        renderInput={xAxisInput}
-                        value={config.chart.xAxisColumn ?? null}
-                    ></Autocomplete>
-                    <Autocomplete
-                        onChange={onYAxisChange}
-                        options={yAxisOptions}
-                        renderInput={yAxisInput}
-                        value={config.chart.yAxisColumn ?? null}
-                    ></Autocomplete>
-                    <Autocomplete
-                        onChange={onChartGroupChange}
-                        options={chartGroupOptions}
-                        renderInput={chartGroupInput}
-                        value={config.chart.groupColumn ?? null}
-                    ></Autocomplete>
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                onChange={onChartLegendsChange}
-                                checked={!!config.chart.legends}
-                            ></Checkbox>
-                        }
-                        label="Show Legends"
-                    ></FormControlLabel>
+                    <FormControl css={textfieldCss}>
+                        <InputLabel id={chartTypeId}>Chart Type</InputLabel>
+                        <Select
+                            labelId={chartTypeId}
+                            label="Chart Type"
+                            value={config.chart.type ?? ''}
+                            onChange={onChartTypeChange}
+                        >
+                            {Object.entries(chartTypeNames).map(([chartType, name]) => (
+                                <MenuItem key={chartType} value={chartType}>
+                                    {name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <ChartEditor
+                        chartConfig={config.chart}
+                        onChartConfigChange={onChartConfigChange}
+                        panelData={config.data}
+                    ></ChartEditor>
                 </form>
             </Paper>
         </div>

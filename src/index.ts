@@ -8,8 +8,10 @@ export type { PanelEditorProps } from '~/components/panel-editor';
 export { PanelEditor } from '~/components/panel-editor';
 export { emptyPartialPanelEditorConfig } from '~/data/panel-editor';
 export type {
+    BarChartConfig,
     ChartConfig,
     LineChartConfig,
+    PartialBarChartConfig,
     PartialChartConfig,
     PartialLineChartConfig,
 } from '~/types/chart';
@@ -25,4 +27,4 @@ export type {
 } from '~/types/panel-editor';
 export type { GetNewPanelPositionOptions } from '~/utils/dashboard';
 export { getNewPanelPosition } from '~/utils/dashboard';
-export { getPartialPanelEditorConfigFromPartial } from '~/utils/panel-editor';
+export { getPanelEditorConfigFromPartial } from '~/utils/panel-editor';

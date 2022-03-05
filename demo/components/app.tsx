@@ -10,7 +10,7 @@ import {
     ChartType,
     Dashboard,
     getNewPanelPosition,
-    getPartialPanelEditorConfigFromPartial,
+    getPanelEditorConfigFromPartial,
     PanelConfig,
     PanelEditor,
     PanelLayout,
@@ -86,7 +86,7 @@ const _App = () => {
         if (!panelEditorConfig) {
             return;
         }
-        const filledConfig = getPartialPanelEditorConfigFromPartial(panelEditorConfig);
+        const filledConfig = getPanelEditorConfigFromPartial(panelEditorConfig);
         if (!filledConfig) {
             return;
         }
@@ -204,7 +204,7 @@ const _App = () => {
                     <>
                         <Button onClick={back}>Back</Button>
                         <Button
-                            disabled={!getPartialPanelEditorConfigFromPartial(panelEditorConfig)}
+                            disabled={!getPanelEditorConfigFromPartial(panelEditorConfig)}
                             onClick={savePanel}
                         >
                             Save
