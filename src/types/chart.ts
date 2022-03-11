@@ -1,5 +1,6 @@
 export enum ChartType {
     bar = 'bar',
+    candlestick = 'candlestick',
     line = 'line',
 }
 
@@ -11,6 +12,15 @@ export interface BarChartConfig {
     legends?: boolean;
 }
 
+export interface CandlestickChartConfig {
+    type: ChartType.candlestick;
+    xAxisColumn: string;
+    openColumn: string;
+    closeColumn: string;
+    lowestColumn: string;
+    highestColumn: string;
+}
+
 export interface LineChartConfig {
     type: ChartType.line;
     xAxisColumn: string;
@@ -20,9 +30,13 @@ export interface LineChartConfig {
     legends?: boolean;
 }
 
-export type ChartConfig = BarChartConfig | LineChartConfig;
+export type ChartConfig = BarChartConfig | CandlestickChartConfig | LineChartConfig;
 
+export type PartialCandlestickChartConfig = Partial<CandlestickChartConfig>;
 export type PartialBarChartConfig = Partial<BarChartConfig>;
 export type PartialLineChartConfig = Partial<LineChartConfig>;
 
-export type PartialChartConfig = PartialBarChartConfig | PartialLineChartConfig;
+export type PartialChartConfig =
+    | PartialBarChartConfig
+    | PartialCandlestickChartConfig
+    | PartialLineChartConfig;

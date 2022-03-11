@@ -4,9 +4,15 @@ import { ChartConfig, ChartType, PartialChartConfig } from '~/types/chart';
 import { PanelData } from '~/types/panel-editor';
 
 import { getBarSeries, isBarChartConfigComplete, updateEchartsBarConfig } from './bar';
+import {
+    getCandlestickSeries,
+    isCandlestickChartConfigComplete,
+    updateEchartsCandlestickConfig,
+} from './candlestick';
 import { getLineSeries, isLineChartConfigComplete, updateEchartsLineConfig } from './line';
 
 export { fillBarChartConfig } from './bar';
+export { fillCandlestickChartConfig } from './candlestick';
 export { fillLineChartConfig } from './line';
 
 export const isChartConfigComplete = (config: PartialChartConfig): config is ChartConfig => {
@@ -16,6 +22,8 @@ export const isChartConfigComplete = (config: PartialChartConfig): config is Cha
     switch (config.type) {
         case ChartType.bar:
             return isBarChartConfigComplete(config);
+        case ChartType.candlestick:
+            return isCandlestickChartConfigComplete(config);
         case ChartType.line:
             return isLineChartConfigComplete(config);
     }
@@ -34,6 +42,9 @@ export const getEchartsConfig = (options: GetEchartsConfigOptions): EChartsOptio
         case ChartType.bar:
             series = getBarSeries({ chartConfig, panelData });
             break;
+        case ChartType.candlestick:
+            series = getCandlestickSeries({ chartConfig, panelData });
+            break;
         case ChartType.line:
             series = getLineSeries({ chartConfig, panelData });
             break;
@@ -43,13 +54,13 @@ export const getEchartsConfig = (options: GetEchartsConfigOptions): EChartsOptio
         grid: {
             top: 16,
             right: 32,
-            bottom: chartConfig.legends ? 64 : 32,
+            bottom: 'legends' in chartConfig && chartConfig.legends ? 64 : 32,
             left: 32,
         },
         xAxis: {},
         yAxis: {},
         legend: {
-            show: !!chartConfig.legends,
+            show: !!('legends' in chartConfig && chartConfig.legends),
             type: 'scroll',
             right: 128,
             bottom: 8,
@@ -63,6 +74,9 @@ export const getEchartsConfig = (options: GetEchartsConfigOptions): EChartsOptio
     switch (chartConfig.type) {
         case ChartType.bar:
             updateEchartsBarConfig({ chartConfig, echartsConfig });
+            break;
+        case ChartType.candlestick:
+            updateEchartsCandlestickConfig({ chartConfig, echartsConfig, panelData });
             break;
         case ChartType.line:
             updateEchartsLineConfig({ chartConfig, echartsConfig });

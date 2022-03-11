@@ -4,6 +4,7 @@ import { ChartType, PartialChartConfig } from '~/types/chart';
 import { PartialPanelData } from '~/types/panel-editor';
 
 import { BarChartEditor, BarChartEditorProps } from './bar';
+import { CandlestickChartEditor, CandlestickChartEditorProps } from './candlestick';
 import { LineChartEditor, LineChartEditorProps } from './line';
 
 export interface ChartEditorProps {
@@ -20,6 +21,12 @@ const _ChartEditor = (props: ChartEditorProps) => {
     switch (chartConfig.type) {
         case ChartType.bar:
             return <BarChartEditor {...(props as BarChartEditorProps)}></BarChartEditor>;
+        case ChartType.candlestick:
+            return (
+                <CandlestickChartEditor
+                    {...(props as CandlestickChartEditorProps)}
+                ></CandlestickChartEditor>
+            );
         case ChartType.line:
             return <LineChartEditor {...(props as LineChartEditorProps)}></LineChartEditor>;
     }

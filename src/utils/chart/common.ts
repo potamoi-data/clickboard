@@ -14,6 +14,21 @@ export const getEchartsValue = (value: ClickhouseCell): EchartsValue => {
     }
 };
 
+export type EchartsAxisValue = number | string;
+
+export const getEchartsAxisValue = (value: ClickhouseCell): EchartsAxisValue => {
+    switch (typeof value) {
+        case 'boolean':
+            return Number(value);
+        case 'bigint':
+            return Number(value);
+        case 'object':
+            return value.toLocaleString();
+        default:
+            return value;
+    }
+};
+
 export const groupRows = (
     rows: ClickhouseCell[][],
     groupColumnIndex: number,

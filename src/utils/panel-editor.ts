@@ -7,7 +7,12 @@ import {
     PartialPanelData,
     PartialPanelEditorConfig,
 } from '~/types/panel-editor';
-import { fillBarChartConfig, fillLineChartConfig, isChartConfigComplete } from '~/utils/chart';
+import {
+    fillBarChartConfig,
+    fillCandlestickChartConfig,
+    fillLineChartConfig,
+    isChartConfigComplete,
+} from '~/utils/chart';
 
 const fillChartConfig = (config: PartialChartConfig): PartialChartConfig => {
     if (!config.type) {
@@ -16,6 +21,8 @@ const fillChartConfig = (config: PartialChartConfig): PartialChartConfig => {
     switch (config.type) {
         case ChartType.bar:
             return fillBarChartConfig(config);
+        case ChartType.candlestick:
+            return fillCandlestickChartConfig(config);
         case ChartType.line:
             return fillLineChartConfig(config);
     }
