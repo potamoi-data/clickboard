@@ -85,17 +85,6 @@ const _LineChartEditor = (props: LineChartEditorProps) => {
                     );
                 }}
             ></Checkbox>
-            <Checkbox
-                label="Show Legends"
-                checked={chartConfig.legends}
-                onChange={value => {
-                    onChartConfigChange(
-                        produce(chartConfig, draft => {
-                            draft.legends = value;
-                        }),
-                    );
-                }}
-            ></Checkbox>
         </>
     );
 };
