@@ -53,18 +53,20 @@ export const getEchartsConfig = (options: GetEchartsConfigOptions): EChartsOptio
     const echartsConfig: EChartsOption = {
         grid: {
             top: 16,
-            right: 32,
-            bottom: 'legends' in chartConfig && chartConfig.legends ? 64 : 32,
-            left: 32,
+            right: 64,
+            bottom: 'legends' in chartConfig && chartConfig.legends ? 64 : 48,
+            left: 64,
         },
         xAxis: {},
-        yAxis: {},
+        yAxis: {
+            scale: true,
+        },
         legend: {
             show: !!('legends' in chartConfig && chartConfig.legends),
             type: 'scroll',
-            right: 128,
+            right: 64,
             bottom: 8,
-            left: 32,
+            left: 64,
         },
     };
     if (series) {

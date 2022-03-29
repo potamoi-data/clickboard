@@ -36,7 +36,8 @@ export const fillPartialPanelEditorConfig = (
         draft.chart = fillChartConfig(draft.chart);
     });
 
-export const isPanelDataComplete = (data: PartialPanelData): data is PanelData => !!data.query;
+export const isPanelDataComplete = (data: PartialPanelData): data is PanelData =>
+    data.query !== undefined;
 
 export const isPanelEditorConfigComplete = (
     config: PartialPanelEditorConfig,

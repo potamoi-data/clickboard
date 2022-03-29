@@ -2,7 +2,7 @@ import { Global, css } from '@emotion/react';
 import { StrictMode } from 'react';
 import { render } from 'react-dom';
 
-import { App } from './components/app';
+import { App } from './pages/app';
 
 const globalCss = css`
     html,

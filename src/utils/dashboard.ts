@@ -26,13 +26,13 @@ export const filterLayoutChangeEntries = (
 
 export interface GetNewPanelPositionOptions {
     columns: number;
-    initialWidth: number;
+    initialPanelWidth: number;
     panels: readonly PanelLayoutEntry[];
 }
 
 // @todo Optimize by not going through all panels
 export const getNewPanelPosition = (options: GetNewPanelPositionOptions): [number, number] => {
-    const { columns, initialWidth, panels } = options;
+    const { columns, initialPanelWidth, panels } = options;
 
     const rowToPanels = new Map<number, PanelLayoutEntry[]>();
     for (const panel of panels) {
@@ -55,7 +55,7 @@ export const getNewPanelPosition = (options: GetNewPanelPositionOptions): [numbe
         let startEmpty = true;
         for (const panel of panels) {
             const { layout } = panel;
-            if (startEmpty && layout.x < initialWidth) {
+            if (startEmpty && layout.x < initialPanelWidth) {
                 startEmpty = false;
             }
         }
@@ -71,7 +71,7 @@ export const getNewPanelPosition = (options: GetNewPanelPositionOptions): [numbe
             const { layout } = panel;
             lastColumn = Math.max(lastColumn, layout.x + layout.width);
         }
-        if (lastColumn + initialWidth > columns) {
+        if (lastColumn + initialPanelWidth > columns) {
             return [0, row + 1];
         }
         return [lastColumn, row];
